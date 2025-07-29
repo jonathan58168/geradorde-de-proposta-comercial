@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta Comercial FORTE GPS</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas library for capturing the element as an image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Google Fonts - Poppins for a modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #1a202c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem 1rem;
+            color: #e2e8f0;
+        }
+        .container-wrapper {
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .table-header {
+            background-color: #3182ce;
+            color: white;
+        }
+        .table-row-even {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        .table-row-odd {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        .table-cell {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .table-cell:last-child {
+            border-bottom: none;
+        }
+        #logo-placeholder {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #logo-placeholder:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        #logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        [contenteditable="true"]:focus {
+            outline: 2px solid #3182ce;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        /* Modal Styles */
+        #preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        #preview-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        #preview-modal .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #3182ce;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .container-wrapper {
+                padding: 2rem 1.5rem;
+            }
+            .header-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header-info .date-download-wrapper {
+                margin-top: 1.5rem;
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            .header-info .company-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header-info .company-details {
+                margin-top: 1rem;
+                margin-left: 0;
+            }
+            .date-text {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="proposal-content" class="container-wrapper rounded-3xl shadow-xl">
+        <!-- Top Section -->
+        <div class="flex justify-between items-start mb-10 header-info">
+            <!-- Logo and Company Info -->
+            <div class="flex items-center space-x-4 company-info">
+                <!-- Logo Placeholder -->
+                <label for="logo-upload" id="logo-placeholder" class="w-24 h-24 bg-gray-800 bg-opacity-50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-600">
+                    <span id="logo-text" class="text-gray-400 text-xs text-center p-2">Clique para adicionar sua logo</span>
+                    <img id="logo-img" src="" alt="Logo da Empresa" class="hidden"/>
+                </label>
+                <input type="file" id="logo-upload" class="hidden" accept="image/*">
+                <div class="company-details">
+                    <h1 class="text-4xl font-bold text-white leading-tight" contenteditable="true">FORTE GPS</h1>
+                    <h2 class="text-2xl font-semibold text-blue-300 leading-tight" contenteditable="true">PROPOSTA COMERCIAL</h2>
+                    <p class="text-lg text-gray-400 italic" contenteditable="true">Armazenamento de Imagens em Nuvem</p>
+                </div>
+            </div>
+            <!-- Date and Download Button -->
+            <div class="text-right text-gray-400 text-sm date-download-wrapper">
+                <div class="flex items-center justify-end space-x-2">
+                    <p id="date-text" class="date-text" contenteditable="true">29 de Julho de 2025</p>
+                    <button id="update-date" class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-2 rounded-lg">Atualizar Data</button>
+                </div>
+                <div class="flex justify-end space-x-2 mt-2">
+                    <button id="preview-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span>Visualizar</span>
+                    </button>
+                    <button id="download-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>Download</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Client Section -->
+        <div class="mb-8 p-4 bg-gray-700 bg-opacity-30 rounded-lg">
+            <p class="text-gray-300 text-lg" contenteditable="true">Para:</p>
+            <h3 class="text-2xl font-semibold text-white" contenteditable="true">Locarflex Locação de Veículos Eirelli</h3>
+        </div>
+        <!-- Institutional Text -->
+        <div class="mb-10 text-lg leading-relaxed text-gray-300">
+            <p class="mb-4" contenteditable="true">É com grande satisfação que apresentamos esta proposta para fornecimento dos serviços em referência. Agradecemos pela oportunidade e reforçamos nosso compromisso com a excelência e inovação.</p>
+            <p class="mb-4" contenteditable="true">A leitura desta proposta demonstra que os senhores estão investindo em segurança inteligente e tecnologia de ponta.</p>
+            <p contenteditable="true">A <strong class="text-blue-300">FORTE GPS</strong> é especializada em soluções robustas e eficazes para armazenamento de imagens em nuvem.</p>
+        </div>
+        <!-- Table Section (Cameras) -->
+        <div id="cameras-section" class="mb-10 table-responsive rounded-xl overflow-hidden shadow-lg">
+            <table id="items-table" class="w-full text-left border-collapse">
+                <thead>
+                    <tr>
+                        <th class="table-header table-cell rounded-tl-xl">CÂMERAS</th>
+                        <th class="table-header table-cell">DIAS DE GRAVAÇÃO</th>
+                        <th class="table-header table-cell">CONSUMO</th>
+                        <th class="table-header table-cell">VALOR</th>
+                        <th class="table-header table-cell rounded-tr-xl">AÇÕES</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr class="table-row-odd">
+                        <td class="table-cell" contenteditable="true">01</td>
+                        <td class="table-cell" contenteditable="true">01</td>
+                        <td class="table-cell" contenteditable="true">16,2 GB</td>
+                        <td class="table-cell" contenteditable="true">R$ 15,86</td>
+                        <td class="table-cell"><button class="remove-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remover</button></td>
+                    </tr>
+                    <tr class="table-row-even">
+                        <td class="table-cell" contenteditable="true">01</td>
+                        <td class="table-cell" contenteditable="true">03</td>
+                        <td class="table-cell" contenteditable="true">48,6 GB</td>
+                        <td class="table-cell" contenteditable="true">R$ 19,58</td>
+                        <td class="table-cell"><button class="remove-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remover</button></td>
+                    </tr>
+                    <tr class="table-row-odd">
+                        <td class="table-cell" contenteditable="true">01</td>
+                        <td class="table-cell" contenteditable="true">07</td>
+                        <td class="table-cell" contenteditable="true">113,4 GB</td>
+                        <td class="table-cell" contenteditable="true">R$ 39,02</td>
+                        <td class="table-cell"><button class="remove-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remover</button></td>
+                    </tr>
+                    <tr class="table-row-even">
+                        <td class="table-cell" contenteditable="true">01</td>
+                        <td class="table-cell" contenteditable="true">15</td>
+                        <td class="table-cell" contenteditable="true">243 GB</td>
+                        <td class="table-cell" contenteditable="true">R$ 77,90</td>
+                        <td class="table-cell"><button class="remove-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remover</button></td>
+                    </tr>
+                    <tr class="table-row-odd">
+                        <td class="table-cell" contenteditable="true">01</td>
+                        <td class="table-cell" contenteditable="true">30</td>
+                        <td class="table-cell" contenteditable="true">145,8 GB</td>
+                        <td class="table-cell" contenteditable="true">R$ 150,80</td>
+                        <td class="table-cell"><button class="remove-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remover</button></td>
+                    </tr>
+                    <tr class="table-row-even">
+                        <td class="table-cell rounded-bl-xl" contenteditable="true">01</td>
+                        <td class="table-cell" contenteditable="true">365</td>
+                        <td class="table-cell" contenteditable="true">5,91 TB</td>
+                        <td class="table-cell rounded-br-xl" contenteditable="true">R$ 1.778,00</td>
+                        <td class="table-cell"><button class="remove-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remover</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button id="add-row" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Adicionar Linha</button>
+        </div>
+        <!-- Services Section -->
+        <div id="services-section" class="mb-10 table-responsive rounded-xl overflow-hidden shadow-lg">
+            <h3 class="text-xl font-semibold text-white mb-4" contenteditable="true">Serviços Adicionais</h3>
+            <table id="services-table" class="w-full text-left border-collapse">
+                <thead>
+                    <tr>
+                        <th class="table-header table-cell rounded-tl-xl">SERVIÇO</th>
+                        <th class="table-header table-cell">DESCRIÇÃO</th>
+                        <th class="table-header table-cell">VALOR</th>
+                        <th class="table-header table-cell rounded-tr-xl">AÇÕES</th>
+                    </tr>
+                </thead>
+                <tbody id="services-table-body">
+                    <tr class="table-row-odd">
+                        <td class="table-cell" contenteditable="true">Reconhecimento Facial</td>
+                        <td class="table-cell" contenteditable="true">Identificação de pessoas em tempo real</td>
+                        <td class="table-cell" contenteditable="true">R$ 500,00</td>
+                        <td class="table-cell"><button class="remove-service-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeServiceRow(this)">Remover</button></td>
+                    </tr>
+                    <tr class="table-row-even">
+                        <td class="table-cell" contenteditable="true">Leitura de Placa</td>
+                        <td class="table-cell" contenteditable="true">Reconhecimento automático de placas de veículos</td>
+                        <td class="table-cell" contenteditable="true">R$ 300,00</td>
+                        <td class="table-cell"><button class="remove-service-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeServiceRow(this)">Remover</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button id="add-service-row" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Adicionar Serviço</button>
+        </div>
+        <!-- Footer Section -->
+        <div class="text-center text-gray-400">
+            <div class="border-t border-gray-600 pt-6 mb-4"></div>
+            <p class="text-xl font-semibold text-white mb-2" contenteditable="true">Apolinário Nobre de Araujo</p>
+            <p class="text-lg text-gray-300 mb-4" contenteditable="true">Diretor Operacional</p>
+            <p class="text-md text-gray-500" contenteditable="true">Rua José Hipólito, 550 – Sala 41<br>Messejana, Fortaleza – CE</p>
+        </div>
+    </div>
+    <!-- Preview Modal -->
+    <div id="preview-modal">
+        <button class="close-btn">Fechar</button>
+        <img id="preview-img" src="" alt="Pré-visualização da Proposta"/>
+    </div>
+    <script>
+        // --- JavaScript for Logo Upload ---
+        const logoUpload = document.getElementById('logo-upload');
+        const logoPlaceholder = document.getElementById('logo-placeholder');
+        const logoImg = document.getElementById('logo-img');
+        const logoText = document.getElementById('logo-text');
+        logoUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoImg.src = e.target.result;
+                    logoImg.classList.remove('hidden');
+                    logoText.classList.add('hidden');
+                    logoPlaceholder.classList.remove('border-dashed');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        // --- JavaScript for Date Update ---
+        function updateDate() {
+            const dateText = document.getElementById('date-text');
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            dateText.textContent = now.toLocaleDateString('pt-BR', options);
+        }
+        document.getElementById('update-date').addEventListener('click', updateDate);
+        // --- JavaScript for Camera Table ---
+        function addRow() {
+            const tbody = document.getElementById('table-body');
+            const rowCount = tbody.children.length;
+            const isEven = rowCount % 2 === 0;
+            const newRow = document.createElement('tr');
+            newRow.className = isEven ? 'table-row-even' : 'table-row-odd';
+            newRow.innerHTML = `
+                <td class="table-cell" contenteditable="true">01</td>
+                <td class="table-cell" contenteditable="true">01</td>
+                <td class="table-cell" contenteditable="true">0 GB</td>
+                <td class="table-cell" contenteditable="true">R$ 0,00</td>
+                <td class="table-cell"><button class="remove-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeRow(this)">Remover</button></td>
+            `;
+            tbody.appendChild(newRow);
+            updateTableCorners();
+            toggleCamerasSectionVisibility();
+        }
+        function removeRow(button) {
+            const tbody = document.getElementById('table-body');
+            button.parentElement.parentElement.remove();
+            updateTableRowClasses();
+            updateTableCorners();
+            toggleCamerasSectionVisibility();
+        }
+        function updateTableRowClasses() {
+            const rows = document.querySelectorAll('#table-body tr');
+            rows.forEach((row, index) => {
+                row.className = index % 2 === 0 ? 'table-row-odd' : 'table-row-even';
+            });
+        }
+        function updateTableCorners() {
+            const rows = document.querySelectorAll('#table-body tr');
+            rows.forEach((row, index) => {
+                const cells = row.querySelectorAll('td');
+                if (index === rows.length - 1) {
+                    cells[0].classList.add('rounded-bl-xl');
+                    cells[3].classList.add('rounded-br-xl');
+                } else {
+                    cells[0].classList.remove('rounded-bl-xl');
+                    cells[3].classList.remove('rounded-br-xl');
+                }
+            });
+        }
+        function toggleCamerasSectionVisibility() {
+            const camerasSection = document.getElementById('cameras-section');
+            const tbody = document.getElementById('table-body');
+            const hasContent = tbody.children.length > 0;
+            camerasSection.style.display = hasContent ? 'block' : 'none';
+        }
+        document.getElementById('add-row').addEventListener('click', addRow);
+        // --- JavaScript for Services Table ---
+        function addServiceRow() {
+            const tbody = document.getElementById('services-table-body');
+            const rowCount = tbody.children.length;
+            const isEven = rowCount % 2 === 0;
+            const newRow = document.createElement('tr');
+            newRow.className = isEven ? 'table-row-even' : 'table-row-odd';
+            newRow.innerHTML = `
+                <td class="table-cell" contenteditable="true">Novo Serviço</td>
+                <td class="table-cell" contenteditable="true">Descrição do serviço</td>
+                <td class="table-cell" contenteditable="true">R$ 0,00</td>
+                <td class="table-cell"><button class="remove-service-row bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" onclick="removeServiceRow(this)">Remover</button></td>
+            `;
+            tbody.appendChild(newRow);
+            updateServiceTableCorners();
+            toggleServicesSectionVisibility();
+        }
+        function removeServiceRow(button) {
+            const tbody = document.getElementById('services-table-body');
+            button.parentElement.parentElement.remove();
+            updateServiceTableRowClasses();
+            updateServiceTableCorners();
+            toggleServicesSectionVisibility();
+        }
+        function updateServiceTableRowClasses() {
+            const rows = document.querySelectorAll('#services-table-body tr');
+            rows.forEach((row, index) => {
+                row.className = index % 2 === 0 ? 'table-row-odd' : 'table-row-even';
+            });
+        }
+        function updateServiceTableCorners() {
+            const rows = document.querySelectorAll('#services-table-body tr');
+            rows.forEach((row, index) => {
+                const cells = row.querySelectorAll('td');
+                if (index === rows.length - 1) {
+                    cells[0].classList.add('rounded-bl-xl');
+                    cells[2].classList.add('rounded-br-xl');
+                } else {
+                    cells[0].classList.remove('rounded-bl-xl');
+                    cells[2].classList.remove('rounded-br-xl');
+                }
+            });
+        }
+        function toggleServicesSectionVisibility() {
+            const servicesSection = document.getElementById('services-section');
+            const tbody = document.getElementById('services-table-body');
+            const hasContent = Array.from(tbody.children).some(row =>
+                Array.from(row.querySelectorAll('td')).some(cell => cell.textContent.trim() !== '')
+            );
+            servicesSection.style.display = hasContent ? 'block' : 'none';
+        }
+        document.getElementById('add-service-row').addEventListener('click', addServiceRow);
+        // --- JavaScript for Preview and Download ---
+        function prepareProposalForCapture(callback) {
+            const downloadBtn = document.getElementById('download-btn');
+            const previewBtn = document.getElementById('preview-btn');
+            const addRowBtn = document.getElementById('add-row');
+            const addServiceRowBtn = document.getElementById('add-service-row');
+            const updateDateBtn = document.getElementById('update-date');
+            const removeRowButtons = document.getElementsByClassName('remove-row');
+            const removeServiceRowButtons = document.getElementsByClassName('remove-service-row');
+            const proposalElement = document.getElementById('proposal-content');
+            // Hide buttons
+            downloadBtn.style.visibility = 'hidden';
+            previewBtn.style.visibility = 'hidden';
+            addRowBtn.style.visibility = 'hidden';
+            addServiceRowBtn.style.visibility = 'hidden';
+            updateDateBtn.style.visibility = 'hidden';
+            Array.from(removeRowButtons).forEach(btn => btn.style.visibility = 'hidden');
+            Array.from(removeServiceRowButtons).forEach(btn => btn.style.visibility = 'hidden');
+            // Toggle section visibility
+            toggleCamerasSectionVisibility();
+            toggleServicesSectionVisibility();
+            // Generate canvas
+            html2canvas(proposalElement, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#1a202c'
+            }).then(canvas => {
+                // Restore buttons and sections
+                downloadBtn.style.visibility = 'visible';
+                previewBtn.style.visibility = 'visible';
+                addRowBtn.style.visibility = 'visible';
+                addServiceRowBtn.style.visibility = 'visible';
+                updateDateBtn.style.visibility = 'visible';
+                Array.from(removeRowButtons).forEach(btn => btn.style.visibility = 'visible');
+                Array.from(removeServiceRowButtons).forEach(btn => btn.style.visibility = 'visible');
+                document.getElementById('cameras-section').style.display = 'block';
+                document.getElementById('services-section').style.display = 'block';
+                callback(canvas);
+            });
+        }
+        // Preview Functionality
+        document.getElementById('preview-btn').addEventListener('click', function() {
+            prepareProposalForCapture(canvas => {
+                const previewImg = document.getElementById('preview-img');
+                const previewModal = document.getElementById('preview-modal');
+                previewImg.src = canvas.toDataURL('image/png');
+                previewModal.style.display = 'flex';
+            });
+        });
+        document.getElementById('preview-modal').querySelector('.close-btn').addEventListener('click', function() {
+            document.getElementById('preview-modal').style.display = 'none';
+        });
+        // Download Functionality
+        document.getElementById('download-btn').addEventListener('click', function() {
+            prepareProposalForCapture(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Proposta_Comercial_Forte_GPS.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+        // Initialize section visibility
+        toggleCamerasSectionVisibility();
+        toggleServicesSectionVisibility();
+    </script>
+</body>
+</html>
